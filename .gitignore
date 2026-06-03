@@ -1,0 +1,16 @@
+# Virtual environment
+.venv/
+env/
+venv/
+
+# PyTorch/Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data download folder
+data/
+
+# OS/System files
+.DS_Store
+Thumbs.db
