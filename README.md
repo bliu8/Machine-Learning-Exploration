@@ -1,74 +1,65 @@
-# CIFAR-10 ResNet-6n+2 Classifier Setup
+# mlscratch
 
-This repository contains the scaffolded setup for a CIFAR-10 classifier implementing the ResNet architecture variant described in Section 4.2 of ["Deep Residual Learning for Image Recognition" (He et al.)](https://arxiv.org/abs/1512.03385).
+A personal project for implementing foundational machine-learning techniques
+from scratch in PyTorch, with an emphasis on readable code, reproducible runs,
+and honest benchmarking.
 
-## Architecture Details
+The first target is a CIFAR-10 ResNet — the 6n+2 family from
+["Deep Residual Learning for Image Recognition" (He et al.)](https://arxiv.org/abs/1512.03385),
+Section 4.2. The architecture is scaffolded; the residual forward passes are
+still being filled in.
 
-For CIFAR-10, the paper designs a specific ResNet architecture family of depth $6n + 2$ using parameter-free **Option-A zero-padding shortcuts**.
-
-- **Initial layer**: Single $3 \times 3$ convolution with 16 filters.
-- **Stage 1**: $n$ blocks of $3 \times 3$ convolutions with 16 filters (output size: $32 \times 32$).
-- **Stage 2**: $n$ blocks of $3 \times 3$ convolutions with 32 filters (output size: $16 \times 16$). The first block downsamples spatial size via stride=2.
-- **Stage 3**: $n$ blocks of $3 \times 3$ convolutions with 64 filters (output size: $8 \times 8$). The first block downsamples spatial size via stride=2.
-- **Pooling & Output**: Global average pooling, followed by a 10-way fully-connected layer.
-
-### Depth Table
-
-| $n$ parameter | Total Layer Depth ($6n + 2$) |
-|:-------------:|:----------------------------:|
-|       3       |              20              |
-|       5       |              32              |
-|       7       |              44              |
-|       9       |              56              |
-
----
-
-## Directory Structure
+## Layout
 
 ```
-resnet_cifar/
-  ├── __init__.py
-  ├── config.py    # Hyperparameters: n, batch_size, epochs, lr, weight_decay, momentum
-  ├── data.py      # CIFAR-10 DataLoaders (fully implemented with augmentations)
-  ├── model.py     # BasicBlock + ResNetCifar (signatures + TODO stubs)
-  ├── train.py     # Training and evaluation loop skeleton (with TODO stubs)
-  └── utils.py     # set_seed() and accuracy helper (fully implemented)
-requirements.txt   # Pinned dependencies
-README.md          # Setup and architectural documentation
-smoke_test.py      # Verification script
+src/mlscratch/
+  layers/      # reusable blocks (e.g. residual BasicBlock)
+  models/      # architectures (ResNetCifar; TinyConvNet placeholder)
+  utils/       # seeding (utils/seed.py) and metrics
+benchmarks/    # timing + peak-memory harness -> Markdown table
+tests/         # pytest suite
 ```
 
----
+## Setup
 
-## Installation & Setup
-
-1. **Create the virtual environment** (requires Python 3.11+):
-   ```bash
-   python3 -m venv .venv
-   ```
-
-2. **Activate the environment**:
-   - On macOS/Linux:
-     ```bash
-     source .venv/bin/pipe/activate  # or source .venv/bin/activate
-     ```
-   - On Windows:
-     ```cmd
-     .venv\Scripts\activate
-     ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
----
-
-## Verification
-
-To run the verification smoke test which downloads the CIFAR-10 dataset, configures loaders, pulls one batch, verifies sizes, and checks model initialization:
+Requires Python 3.11+.
 
 ```bash
-python smoke_test.py
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"           # or: make install
 ```
+
+Dependencies are pinned in [`pyproject.toml`](pyproject.toml).
+
+## Usage
+
+```bash
+make test      # run the pytest suite
+make bench     # run the benchmark harness (writes benchmarks/results.md)
+make lint      # ruff + black --check
+make format    # ruff --fix + black
+```
+
+The benchmark harness measures median forward and forward+backward latency
+(and peak memory on CUDA) on synthetic CIFAR-shaped input, and appends a row
+to `benchmarks/results.md`:
+
+```bash
+python benchmarks/bench.py --model tiny --batch-size 128 --iters 20
+```
+
+## Reproducibility
+
+- `mlscratch.utils.set_seed(seed, deterministic=...)` seeds Python, NumPy,
+  and PyTorch (CPU + CUDA). Pass `deterministic=True` to request PyTorch's
+  deterministic algorithms and disable cuDNN autotuning — this trades some
+  speed for run-to-run repeatability on the same hardware.
+- Dependencies are pinned.
+- Note: exact bitwise reproducibility is only guaranteed on the same hardware,
+  drivers, and library versions; MPS (Apple Silicon) determinism varies by
+  PyTorch version.
+
+## Results
+
+_To be added once the model is trained._

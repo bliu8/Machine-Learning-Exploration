@@ -1,16 +1,33 @@
-# Virtual environment
+# Virtual environments
 .venv/
 env/
 venv/
 
-# PyTorch/Python caches
+# Python caches / build artifacts
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
 
-# Data download folder
+# Datasets (downloaded at runtime)
 data/
 
-# OS/System files
+# Model checkpoints / training artifacts
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+runs/
+
+# Benchmark output (regenerated locally)
+benchmarks/results.md
+
+# OS / editor
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/

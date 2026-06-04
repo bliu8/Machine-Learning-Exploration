@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mlscratch"
+version = "0.0.0"
+description = "Foundational ML techniques implemented from scratch, with tests and benchmarks."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "torch==2.12.0",
+    "torchvision==0.27.0",
+    "numpy==2.4.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.4.2",
+    "ruff==0.14.5",
+    "black==25.11.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mlscratch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+src = ["src", "tests", "benchmarks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
